@@ -7,4 +7,6 @@
 {"type":"node","id":900000006,"lat":51.5410,"lon":-0.0600,"tags":{"amenity":"toilets","wheelchair":"yes","fee":"no"}},
 {"type":"node","id":900000007,"lat":51.5455,"lon":-0.0545,"tags":{"amenity":"toilets","name":"Sample: Late-night Toilets","opening_hours":"Fr-Sa 20:00-04:00","fee":"no"}}
 ,{"type":"node","id":900000008,"lat":51.5470,"lon":-0.0575,"tags":{"amenity":"toilets","name":"Sample: Urinal Pod (street)","opening_hours":"Fr-Sa 18:00-06:00","fee":"no","male":"yes","toilets:position":"urinal"}}
+,{"type":"node","id":900000009,"lat":51.5480,"lon":-0.0500,"tags":{"amenity":"toilets","name":"Sample: Back Alley Toilets (no hours tag)","fee":"no","unisex":"yes"}}
+,{"type":"way","id":900000010,"bounds":{"minlat":51.5400,"minlon":-0.0610,"maxlat":51.5420,"maxlon":-0.0590},"tags":{"leisure":"park","name":"Sample Fields (park)","opening_hours":"Mo-Su 07:00-dusk"}}
 ]}

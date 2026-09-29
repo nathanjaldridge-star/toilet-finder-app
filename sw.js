@@ -1,5 +1,5 @@
-const VERSION = 'tf-v2';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'lib/hours.js', 'lib/rank.js', 'lib/facilities.js', 'lib/icons.js', 'manifest.json', 'icons/logo.svg', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'sample-data.json'];
+const VERSION = 'tf-v3';
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'lib/hours.js', 'lib/rank.js', 'lib/facilities.js', 'lib/data.js', 'lib/icons.js', 'manifest.json', 'icons/logo.svg', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'sample-data.json'];
 const CDN = ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 
 self.addEventListener('install', (e) => {
