@@ -1,0 +1,10 @@
+{"note":"SYNTHETIC demo data for ?demo=1 only - not real toilets.","elements":[
+{"type":"node","id":900000001,"lat":51.5462,"lon":-0.0561,"tags":{"amenity":"toilets","name":"Sample: Park Toilets","opening_hours":"Mo-Su 08:00-20:00","wheelchair":"yes","fee":"no","unisex":"yes","changing_table":"yes"}},
+{"type":"node","id":900000002,"lat":51.5431,"lon":-0.0520,"tags":{"amenity":"toilets","name":"Sample: Market Toilets","opening_hours":"Mo-Sa 09:00-17:00; Su off","fee":"yes","wheelchair":"no","male":"yes","female":"yes","gender_segregated":"yes","toilets:position":"urinal;seated"}},
+{"type":"node","id":900000003,"lat":51.5480,"lon":-0.0490,"tags":{"amenity":"toilets","name":"Sample: Station Toilets","opening_hours":"24/7","wheelchair":"yes","fee":"yes","unisex":"yes"}},
+{"type":"node","id":900000004,"lat":51.5445,"lon":-0.0610,"tags":{"amenity":"toilets","name":"Sample: Library Toilets","opening_hours":"Mo-Fr 09:00-19:00, Sa 10:00-16:00","fee":"no","female":"yes"}},
+{"type":"way","id":900000005,"center":{"lat":51.5500,"lon":-0.0580},"tags":{"amenity":"toilets","name":"Sample: Pub Toilets","opening_hours":"12:00-23:00","wheelchair":"limited","male":"yes","urinal":"yes"}},
+{"type":"node","id":900000006,"lat":51.5410,"lon":-0.0600,"tags":{"amenity":"toilets","wheelchair":"yes","fee":"no"}},
+{"type":"node","id":900000007,"lat":51.5455,"lon":-0.0545,"tags":{"amenity":"toilets","name":"Sample: Late-night Toilets","opening_hours":"Fr-Sa 20:00-04:00","fee":"no"}}
+,{"type":"node","id":900000008,"lat":51.5470,"lon":-0.0575,"tags":{"amenity":"toilets","name":"Sample: Urinal Pod (street)","opening_hours":"Fr-Sa 18:00-06:00","fee":"no","male":"yes","toilets:position":"urinal"}}
+]}

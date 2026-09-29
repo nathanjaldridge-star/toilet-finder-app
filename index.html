@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7b4a26">
+<title>Toilet Finder</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1><img class="logo" src="icons/logo.svg" alt="" width="34" height="34"> Toilet Finder</h1>
+</header>
+<div class="chips" role="group" aria-label="Filters">
+  <button type="button" class="chip" data-filter="accessible" aria-pressed="false"><span class="chip-ico" data-icon="accessible"></span>Accessible</button>
+  <button type="button" class="chip" data-filter="urinals" aria-pressed="false"><span class="chip-ico" data-icon="urinal"></span>Urinals</button>
+</div>
+<div id="status" role="status"></div>
+<div id="map" aria-label="Map of nearby toilets"></div>
+<main>
+  <ul id="list"></ul>
+  <p class="foot">Data © OpenStreetMap contributors. Ratings are stored on this device only (prototype).</p>
+</main>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-inner">
+    <button id="closeSheet" class="close" aria-label="Close">×</button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="lib/hours.js"></script>
+<script src="lib/rank.js"></script>
+<script src="lib/facilities.js"></script>
+<script src="lib/icons.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
