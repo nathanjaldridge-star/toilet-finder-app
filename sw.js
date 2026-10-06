@@ -1,5 +1,5 @@
-const VERSION = 'tf-v3';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'lib/hours.js', 'lib/rank.js', 'lib/facilities.js', 'lib/data.js', 'lib/icons.js', 'manifest.json', 'icons/logo.svg', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'sample-data.json'];
+const VERSION = 'tf-v4';
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'lib/hours.js', 'lib/rank.js', 'lib/facilities.js', 'lib/data.js', 'lib/icons.js', 'lib/present.js', 'lib/overpass.js', 'lib/imagery.js', 'fonts/Nunito_400Regular.ttf', 'fonts/Nunito_700Bold.ttf', 'fonts/Nunito_800ExtraBold.ttf', 'manifest.json', 'icons/logo.svg', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'sample-data.json'];
 const CDN = ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'];
 
 self.addEventListener('install', (e) => {
