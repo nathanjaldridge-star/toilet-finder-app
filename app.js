@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var APP_VERSION = 'tf-v4';
+  var APP_VERSION = 'tf-v5';
   var HACKNEY = { lat: 51.5450, lon: -0.0553 };
   var RADIUS = 1500;           // first load: this far around you (m); list also shows this far around the reference point
   var MIN_ZOOM = 13;           // below this the visible area is too big to query
@@ -16,7 +16,7 @@
     filters: { open: false, accessible: false, urinals: false }, selected: null,
     map: null, markers: null, meMarker: null, userMoved: false,
     busy: false, ready: false, pending: null, error: null, lastGoodEndpoint: null, fromCache: false,
-    diag: { endpoint: null, at: null, ms: null, fetched: 0, bbox: null, attempts: [], lastError: null, fetches: 0, parents: null, objectChecks: {} }
+    diag: { endpoint: null, source: null, tiles: null, at: null, ms: null, fetched: 0, bbox: null, attempts: [], lastError: null, fetches: 0, parents: null, objectChecks: {} }
   };
   var $ = function (id) { return document.getElementById(id); };
 
@@ -58,15 +58,31 @@
   var client = Overpass.create({ staggerMs: STAGGER_MS, attemptMs: ATTEMPT_MS });
   function overpass(queryText) { return client.query(queryText); }
 
-  // Phase 1: toilets (fast, must succeed). Phase 2: nearby parent features with opening_hours, used to infer
-  // hours for toilets with none (best-effort: failure only means no "inferred" hours).
+  // Worldwide static tiles built weekly from OpenStreetMap (lib/tiles.js); they include the parent features for
+  // inferred hours, so one download per 0.5° tile is all an area needs.
+  var tiles = Tiles.create({ timeoutMs: 15000 });
+  state.tiles = tiles;
+
+  // Tiles first. If they can't be downloaded: Overpass, phase 1 toilets (fast, must succeed), phase 2 nearby parent
+  // features with opening_hours, used to infer hours for toilets with none (best-effort).
   async function fetchArea(bbox) {
     if (demo) {
       var r0 = await fetch('sample-data.json');
       var els = (await r0.json()).elements;
-      return { elements: els, endpoint: 'demo sample-data.json', ms: 0, attempts: [], remark: null, parents: 'demo', afterToilets: function () { return Promise.resolve([]); } };
+      return { elements: els, endpoint: 'demo sample-data.json', source: 'demo', ms: 0, attempts: [], remark: null, parents: 'demo', afterToilets: function () { return Promise.resolve([]); } };
     }
+    var tileErr = null;
+    try {
+      var tr = await tiles.load(bbox);
+      if (!tiles.state.index) tiles.index().catch(function () {});
+      return {
+        elements: tr.elements, endpoint: tr.base, source: 'tiles', ms: tr.ms, attempts: [], remark: null,
+        tiles: tr.keys.join(' ') + ' (' + tr.fetched + ' downloaded, ' + tr.cached + ' cached, ' + tr.missing + ' empty' + (tr.failed.length ? ', FAILED ' + tr.failed.join('; ') : '') + ')',
+        parents: 'included in tiles', afterToilets: function () { return Promise.resolve([]); }
+      };
+    } catch (e) { tileErr = (e && e.message) || 'tiles failed'; }
     var r = await overpass(Data.buildLightQuery(bbox));
+    r.source = 'overpass (tiles unavailable: ' + tileErr + ')';
     r.afterToilets = function () {
       return overpass(Data.buildParentsQuery(bbox)).then(function (p) {
         r.parents = 'ok via ' + p.endpoint.replace(/^https:\/\/([^\/]+).*/, '$1') + ' in ' + p.ms + ' ms';
@@ -118,7 +134,7 @@
       state.covered.push(bbox);
       state.fromCache = false;
       var d = state.diag;
-      d.endpoint = r.endpoint; d.at = Date.now(); d.ms = r.ms; d.fetched = res.count; d.bbox = Data.bboxStr(bbox);
+      d.endpoint = r.endpoint; d.source = r.source || null; d.tiles = r.tiles || null; d.at = Date.now(); d.ms = r.ms; d.fetched = res.count; d.bbox = Data.bboxStr(bbox);
       d.attempts = r.attempts; d.fetches++; d.parents = demo ? 'demo' : 'loading…'; d.lastError = r.remark ? 'server remark: ' + r.remark : null;
       if (r.endpoint && !demo) state.lastGoodEndpoint = r.endpoint;
       saveCache();
@@ -226,7 +242,7 @@
       ul.innerHTML = items.map(function (t, i) {
         return '<li class="card" data-id="' + esc(t.id) + '" tabindex="0" aria-label="' + esc(t.name + ', ' + Rank.formatDistance(t.distance) + ', ' + t.hoursLabel) + '">' +
           '<div class="row"><span class="num">' + (i + 1) + '</span><div class="who"><div class="name">' + esc(t.name) + '</div>' +
-          '<div class="sub">' + esc([t.operator, feeLabel(t)].filter(Boolean).join(' · ')) + '</div></div>' +
+          '<div class="sub">' + (t.customers ? '<span class="cust-tag">Customers only</span> ' : '') + esc([t.venue, t.operator, feeLabel(t)].filter(Boolean).join(' · ')) + '</div></div>' +
           '<div class="dist"><b>' + Rank.formatDistance(t.distance) + '</b><small>~' + walkMin(t.distance) + ' min walk</small></div></div>' +
           '<div class="meta"><span class="pill ' + pillClass(t) + '" title="' + esc(t.hoursLabel) + '">' + esc(t.hoursShort) + '</span>' +
           starsHtml(t.avg) + facRow(t, 15) +
@@ -272,7 +288,7 @@
     state.meMarker = L.marker([state.pos.lat, state.pos.lon], { icon: L.divIcon({ className: '', html: '<div class="pin me"></div>', iconSize: [18, 18] }), zIndexOffset: 2000, interactive: false, title: state.usingFallback ? 'Default location (Hackney)' : 'You are here' }).addTo(state.map);
     items.forEach(function (t) {
       var sel = t.id === state.selected;
-      var m = L.marker([t.lat, t.lon], { icon: L.divIcon({ className: '', html: '<div class="pin ' + t.rankStatus + (t.hoursSrc === 'none' ? ' none' : '') + (sel ? ' sel' : '') + '">' + Icons.svg(Present.pinIcon(t), { size: 16, label: t.name }) + '</div>', iconSize: [30, 30], iconAnchor: [15, 15] }), title: t.name, zIndexOffset: sel ? 1000 : t.rankStatus === 'open' ? 100 : 0 });
+      var m = L.marker([t.lat, t.lon], { icon: L.divIcon({ className: '', html: '<div class="pin ' + t.rankStatus + (t.hoursSrc === 'none' ? ' none' : '') + (t.customers ? ' cust' : '') + (sel ? ' sel' : '') + '">' + Icons.svg(Present.pinIcon(t), { size: 16, label: t.name }) + '</div>', iconSize: [30, 30], iconAnchor: [15, 15] }), title: t.name + (t.customers ? ' (customers only)' : ''), zIndexOffset: sel ? 1000 : t.customers ? 0 : t.rankStatus === 'open' ? 100 : 0 });
       m.on('click', function () { openSheet(t.id); });
       m.addTo(state.markers);
     });
@@ -285,6 +301,7 @@
     if (t.wheelchair === 'no') out.push('<div class="fac-line muted">Not wheelchair accessible</div>');
     else if (!t.wheelchair) out.push('<div class="fac-line muted">Wheelchair access unknown</div>');
     if (!b.length) out.push('<div class="hint">No facility tags in OpenStreetMap (unknown, not "none").</div>');
+    if (t.customers) out.push('<div class="fac-line cust-line"><span class="box cust">' + Icons.svg('unisex', { size: 22 }) + '</span><span>Customers only' + (t.venue ? ': toilets inside this ' + esc(t.venue) + ', usually for paying customers' : '') + '</span></div>');
     if (t.access) out.push('<div class="hint">Access: ' + esc(t.access) + '</div>');
     return out.join('');
   }
@@ -360,15 +377,21 @@
 
   // ---- diagnostics ("Data status": tap the logo 5 times, or the footer link) ----
   function ago(ts) { if (!ts) return 'never'; var s = Math.round((Date.now() - ts) / 1000); return new Date(ts).toLocaleTimeString() + ' (' + (s < 90 ? s + ' s' : Math.round(s / 60) + ' min') + ' ago)'; }
+  function tileMeta() {
+    var ix = state.tiles && state.tiles.state.index;
+    return ix ? '\nTile dataset: built ' + ix.generated + ', ' + ix.counts.toilets + ' toilets worldwide (' + ix.counts.customersOnly + ' customers-only), ' + ix.attribution : '';
+  }
   function diagText() {
     var d = state.diag, st = Data.stats(storeList()), mine = load(LS.hours, {});
     var myCount = storeList().filter(function (t) { return !t.hours && mine[t.id]; }).length;
     var lines = [
       'Toilet Finder ' + APP_VERSION + (demo ? ' (DEMO data)' : ''),
+      'Data source: ' + (d.source || 'none yet'),
       'Endpoint used: ' + (d.endpoint || 'none yet'),
+      'Tiles: ' + (d.tiles || 'n/a') + tileMeta(),
       'Nearby-hours lookup (for inferred hours): ' + (d.parents || 'n/a'),
       'Fetched last time: ' + d.fetched + ' toilets (bbox ' + (d.bbox || 'n/a') + ')',
-      'Toilets loaded in total: ' + st.total,
+      'Toilets loaded in total: ' + st.total + ' (' + storeList().filter(function (t) { return t.customers; }).length + ' customers only)',
       'With opening_hours in OSM: ' + st.withHours + ' (' + (st.total ? Math.round(100 * st.withHours / st.total) : 0) + '%)',
       'No hours, inferred from nearby feature: ' + st.inferred,
       'No hours at all: ' + (st.total - st.withHours - st.inferred) + ' (you added hours to ' + myCount + ' of these on this device)',
