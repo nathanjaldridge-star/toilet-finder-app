@@ -1,7 +1,7 @@
 {
-  "name": "Toilet Finder",
-  "short_name": "Toilets",
-  "description": "Find the nearest open, clean public toilets.",
+  "name": "I Need a Poop",
+  "short_name": "Need a Poop",
+  "description": "When you've gotta go. Find nearby public toilets — open first, public before customers-only.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

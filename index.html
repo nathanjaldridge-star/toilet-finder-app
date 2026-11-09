@@ -6,7 +6,19 @@
 <meta name="theme-color" content="#FBF6EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16100B" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
-<title>Toilet Finder</title>
+<meta name="description" content="I Need a Poop — find the nearest open public toilet, fast. Public loos first, customers-only when you need them.">
+<meta name="application-name" content="I Need a Poop">
+<meta name="apple-mobile-web-app-title" content="Need a Poop">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta property="og:title" content="I Need a Poop">
+<meta property="og:description" content="When you've gotta go. Find nearby public toilets — open first, public before customers-only.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="I Need a Poop">
+<meta name="twitter:description" content="When you've gotta go. Find nearby public toilets fast.">
+<title>I Need a Poop</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/logo.svg" type="image/svg+xml">
 <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
@@ -20,15 +32,16 @@
 
 <div class="top">
   <header class="brand">
-    <button type="button" class="logo-btn" id="logo" aria-label="Toilet Finder logo"><img class="logo" src="icons/logo.svg" alt="" width="36" height="36"></button>
+    <button type="button" class="logo-btn" id="logo" aria-label="I Need a Poop logo"><img class="logo" src="icons/logo.svg" alt="" width="36" height="36"></button>
     <div class="brand-text">
-      <h1>Toilet Finder</h1>
+      <h1><span class="wordmark-line">I Need a</span> <span class="wordmark-poop">Poop</span></h1>
       <div id="status" role="status"><span class="dot"></span><span id="statusText"></span></div>
     </div>
     <button type="button" id="retry" class="btn-mini" hidden>Retry</button>
   </header>
   <div class="chips" role="group" aria-label="Filters">
     <button type="button" class="chip" data-filter="open" aria-pressed="false">Open now</button>
+    <button type="button" class="chip" data-filter="publicOnly" aria-pressed="false">Public only</button>
     <button type="button" class="chip" data-filter="accessible" aria-pressed="false"><span class="chip-ico" data-icon="accessible"></span>Accessible</button>
     <button type="button" class="chip" data-filter="urinals" aria-pressed="false"><span class="chip-ico" data-icon="urinal"></span>Urinals</button>
     <button type="button" id="searchArea" class="chip ghost">Search this area</button>
@@ -37,12 +50,12 @@
 
 <button type="button" id="locate" class="fab" aria-label="Go to my location"><span class="target"></span></button>
 
-<section id="panel" class="panel" data-snap="half" aria-label="Nearest toilets">
+<section id="panel" class="panel" data-snap="half" aria-label="Nearest loos">
   <div class="panel-head" id="panelHead">
     <div class="grab" aria-hidden="true"></div>
     <div class="panel-title">
-      <h2 id="listTitle">Nearest toilets</h2>
-      <p id="listSub">Open first, then cleanest, then closest</p>
+      <h2 id="listTitle">Nearest loos</h2>
+      <p id="listSub">When you've gotta go · open first, public before customers-only</p>
     </div>
   </div>
   <div class="panel-body">

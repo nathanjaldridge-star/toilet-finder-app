@@ -1,11 +1,14 @@
-# Toilet Finder
-<img src="icons/logo.svg" width="72" align="right" alt="Toilet Finder logo">
+# I Need a Poop
+<img src="icons/logo.svg" width="72" align="right" alt="I Need a Poop logo">
 
-A tiny installable web app (PWA) that finds and ranks nearby public toilets: open now, then cleanliness, then distance.
+When you've gotta go. A tiny installable web app (PWA) that finds nearby toilets from OpenStreetMap:
+**open first**, then **public before customers-only**, then cleanliness, then distance.
 
-Live: https://nathanjaldridge-star.github.io/toilet-finder-app/ (add `?demo=1` for synthetic offline data)
+Live: https://nathanjaldridge-star.github.io/toilet-finder-app/
 
-## Attribution
-Toilet data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/).
+- Filters: Open now · Public only · Accessible · Urinals
+- Data: static worldwide tiles first ([toilet-finder-data](https://nathanjaldridge-star.github.io/toilet-finder-data/)), Overpass as fallback
+- Customers-only places (e.g. a café tagged `toilets=yes`) show as grey dashed pins and only top the list when nothing public is open nearby
+- Ratings and any hours you add stay on this device
 
-This repository contains only the built static app; it is deployed via GitHub Pages.
+Data © OpenStreetMap contributors (ODbL). Built as a free, fun public utility — no account, no tracking beyond what your browser needs for the map.

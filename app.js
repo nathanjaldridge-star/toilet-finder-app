@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var APP_VERSION = 'tf-v5';
+  var APP_VERSION = 'tf-v6';
   var HACKNEY = { lat: 51.5450, lon: -0.0553 };
   var RADIUS = 1500;           // first load: this far around you (m); list also shows this far around the reference point
   var MIN_ZOOM = 13;           // below this the visible area is too big to query
@@ -13,7 +13,7 @@
   var state = {
     pos: HACKNEY, ref: HACKNEY, usingFallback: true, geoNote: 'not asked yet',
     store: {}, parents: {}, covered: [],
-    filters: { open: false, accessible: false, urinals: false }, selected: null,
+    filters: { open: false, accessible: false, urinals: false, publicOnly: false }, selected: null,
     map: null, markers: null, meMarker: null, userMoved: false,
     busy: false, ready: false, pending: null, error: null, lastGoodEndpoint: null, fromCache: false,
     diag: { endpoint: null, source: null, tiles: null, at: null, ms: null, fetched: 0, bbox: null, attempts: [], lastError: null, fetches: 0, parents: null, objectChecks: {} }
@@ -229,7 +229,8 @@
     if (state.filters.accessible) f.push('accessible');
     if (state.filters.urinals) f.push('urinals');
     if (state.filters.open) f.push('open now');
-    return 'No toilets found' + (f.length ? ' with the ' + f.join(' + ') + ' filter on' : ' here') + '. Try "Search this area" after moving the map.';
+    if (state.filters.publicOnly) f.push('public only');
+    return 'No loos found' + (f.length ? ' with the ' + f.join(' + ') + ' filter on' : ' here') + '. Try "Search this area" after moving the map.';
   }
   function pillClass(t) { return 'status ' + (t.hoursSrc === 'none' ? 'none' : t.status) + (t.hoursSrc === 'inferred' || t.hoursSrc === 'you' || t.hoursApprox ? ' soft' : ''); }
 
@@ -250,8 +251,8 @@
       }).join('');
     }
     var open = items.filter(function (t) { return t.status === 'open'; }).length;
-    $('listTitle').textContent = state.filters.open ? 'Open now' : 'Nearest toilets';
-    $('listSub').textContent = (state.userMoved ? 'From map centre' : state.usingFallback ? 'Location off · showing Hackney' : 'Near you') + ' · open first, then cleanest, then closest';
+    $('listTitle').textContent = state.filters.open ? 'Open now' : state.filters.publicOnly ? 'Public loos' : 'Nearest loos';
+    $('listSub').textContent = (state.userMoved ? 'From map centre' : state.usingFallback ? 'Location off · showing Hackney' : 'Near you') + ' · open first, public before customers-only, then cleanest';
     state.counts = { shown: items.length, open: open };
     renderMap(items);
     setStatus();
@@ -385,7 +386,7 @@
     var d = state.diag, st = Data.stats(storeList()), mine = load(LS.hours, {});
     var myCount = storeList().filter(function (t) { return !t.hours && mine[t.id]; }).length;
     var lines = [
-      'Toilet Finder ' + APP_VERSION + (demo ? ' (DEMO data)' : ''),
+      'I Need a Poop ' + APP_VERSION + (demo ? ' (DEMO data)' : ''),
       'Data source: ' + (d.source || 'none yet'),
       'Endpoint used: ' + (d.endpoint || 'none yet'),
       'Tiles: ' + (d.tiles || 'n/a') + tileMeta(),
